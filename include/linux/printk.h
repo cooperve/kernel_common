@@ -29,6 +29,12 @@ extern int console_printk[];
 #define minimum_console_loglevel (console_printk[2])
 #define default_console_loglevel (console_printk[3])
 
+extern int brcm_console_brcm_printk[];
+#define brcm_console_loglevel (brcm_console_brcm_printk[0])
+#define default_brcm_message_loglevel (brcm_console_brcm_printk[1])
+#define minimum_brcm_console_loglevel (brcm_console_brcm_printk[2])
+#define default_brcm_console_loglevel (brcm_console_brcm_printk[3])
+
 static inline void console_silent(void)
 {
 	console_loglevel = 0;
@@ -108,6 +114,15 @@ extern int __printk_ratelimit(const char *func);
 extern bool printk_timed_ratelimit(unsigned long *caller_jiffies,
 				   unsigned int interval_msec);
 
+/* brcm printk */
+asmlinkage int brcm_vprintk(const char *fmt, va_list args)
+       __attribute__ ((format (printf, 1, 0)));
+asmlinkage int brcm_printk(const char * fmt, ...)
+       __attribute__ ((format (printf, 1, 2))) __cold;
+
+extern int brcm_klogging(char *data, int length);
+extern void brcm_current_netcon_status(unsigned char status);
+
 extern int printk_delay_msec;
 extern int dmesg_restrict;
 extern int kptr_restrict;
@@ -133,6 +148,15 @@ static inline bool printk_timed_ratelimit(unsigned long *caller_jiffies,
 {
 	return false;
 }
+/* brcm printk */
+static inline int brcm_vprintk(const char *s, va_list args)
+       __attribute__ ((format (printf, 1, 0)));
+static inline int brcm_vprintk(const char *s, va_list args) { return 0; }
+static inline int brcm_printk(const char *s, ...)
+       __attribute__ ((format (printf, 1, 2)));
+static inline int __cold brcm_printk(const char *s, ...) { return 0; }
+static inline int brcm_klogging(char *data, int length){ return 0;}
+static inline void brcm_current_netcon_status(unsigned char status) {};
 
 static inline void log_buf_kexec_setup(void)
 {

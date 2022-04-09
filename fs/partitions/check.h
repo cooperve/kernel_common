@@ -20,6 +20,7 @@ struct parsed_partitions {
 	int limit;
 	bool access_beyond_eod;
 	char *pp_buf;
+	bool is_kzalloc;
 };
 
 static inline void *read_part_sector(struct parsed_partitions *state,

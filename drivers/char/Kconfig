@@ -605,6 +605,10 @@ config TELCLOCK
 	  /sys/devices/platform/telco_clock, with a number of files for
 	  controlling the behavior of this hardware.
 
+config BCOMVIB
+	tristate "BroadCom Vibrator testing menu"
+	default y
+
 config DEVPORT
 	bool
 	depends on !M68K
@@ -635,3 +639,6 @@ config MSM_SMD_PKT
 
 endmenu
 
+if ARCH_BCM116X || ARCH_BCM215XX
+source "drivers/char/broadcom/Kconfig"
+endif
