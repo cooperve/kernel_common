@@ -4,8 +4,6 @@ SUBLEVEL = 39
 EXTRAVERSION = .4
 NAME = Flesh-Eating Bats with Fangs
 
-BRCM_MODULES := ../modules
-
 # *DOCUMENTATION*
 # To see a list of typical targets execute "make help"
 # More info can be located in ./README
@@ -353,7 +351,6 @@ CFLAGS_GCOV	= -fprofile-arcs -ftest-coverage
 # Needed to be compatible with the O= option
 LINUXINCLUDE    := -I$(srctree)/arch/$(hdr-arch)/include -Iinclude \
                    $(if $(KBUILD_SRC), -I$(srctree)/include) \
-		   -I$(BRCM_MODULES)/include				\
                    -include include/generated/autoconf.h
 
 KBUILD_CPPFLAGS := -D__KERNEL__
@@ -495,7 +492,6 @@ scripts: scripts_basic include/config/auto.conf include/config/tristate.conf
 # Objects we will link into vmlinux / subdirs we need to visit
 init-y		:= init/
 drivers-y	:= drivers/ sound/ firmware/
-drivers-y       += $(BRCM_MODULES)/
 net-y		:= net/
 libs-y		:= lib/
 core-y		:= usr/
@@ -1378,7 +1374,7 @@ endif # KBUILD_EXTMOD
 clean: $(clean-dirs)
 	$(call cmd,rmdirs)
 	$(call cmd,rmfiles)
-	@find $(if $(KBUILD_EXTMOD), $(KBUILD_EXTMOD), .) $(BRCM_MODULES) $(RCS_FIND_IGNORE) \
+	@find $(if $(KBUILD_EXTMOD), $(KBUILD_EXTMOD), .) $(RCS_FIND_IGNORE) \
 		\( -name '*.[oas]' -o -name '*.ko' -o -name '.*.cmd' \
 		-o -name '.*.d' -o -name '.*.tmp' -o -name '*.mod.c' \
 		-o -name '*.symtypes' -o -name 'modules.order' \
