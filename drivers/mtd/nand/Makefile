@@ -48,5 +48,6 @@ obj-$(CONFIG_MTD_NAND_BRCM_UMI)		+= nand_brcm_umi.o nand_correct_data512.o nand_
 obj-$(CONFIG_MTD_NAND_BRCM_NVSRAM)	+= nand_burst_read.o nand_brcm_nvsram.o nand_correct_data512.o nand_calculate_ecc512.o
 obj-$(CONFIG_MTD_NAND_MPC5121_NFC)	+= mpc5121_nfc.o
 obj-$(CONFIG_MTD_NAND_RICOH)		+= r852.o
+obj-$(CONFIG_MTD_NAND_JZ4740)		+= jz4740_nand.o
 
 nand-objs := nand_base.o nand_bbt.o

@@ -55,7 +55,6 @@
 #include <linux/sysctl.h>
 #endif
 #include <linux/kmod.h>
-#include <linux/iface_stat.h>
 
 #include <net/arp.h>
 #include <net/ip.h>
@@ -375,9 +374,6 @@ static int __inet_insert_ifa(struct in_ifaddr *ifa, struct nlmsghdr *nlh,
 	   listeners of netlink will know about new ifaddr */
 	rtmsg_ifa(RTM_NEWADDR, ifa, nlh, pid);
 	blocking_notifier_call_chain(&inetaddr_chain, NETDEV_UP, ifa);
-
-	/* Start persistent interface stat monitoring. Ignores if loopback. */
-	create_iface_stat(in_dev);
 
 	return 0;
 }
@@ -819,8 +815,7 @@ int devinet_ioctl(struct net *net, unsigned int cmd, void __user *arg)
 		}
 		break;
 	case SIOCKILLADDR:	/* Nuke all connections on this address */
-		ret = 0;
-		tcp_v4_nuke_addr(sin->sin_addr.s_addr);
+		ret = tcp_nuke_addr(net, (struct sockaddr *) sin);
 		break;
 	}
 done:
