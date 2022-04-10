@@ -2466,8 +2466,7 @@ static int bcmsdhc_resume(struct platform_device *pdev)
 
 int sdio_add_qos_req(struct bcmsdhc_host *host)
 {
-	host->sdio_driver_pm_qos_req =
-		pm_qos_add_request(PM_QOS_CPU_DMA_LATENCY, PM_QOS_DEFAULT_VALUE);
+	pm_qos_add_request(&host->sdio_driver_pm_qos_req, PM_QOS_CPU_DMA_LATENCY, PM_QOS_DEFAULT_VALUE);
 	pr_debug("%s: ADD Qos\n",__FUNCTION__);
 
 	return 0;

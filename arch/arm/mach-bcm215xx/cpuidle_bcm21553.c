@@ -85,8 +85,8 @@ enum {
 #define param_check_cpu_dbg(name, p) \
 	__param_check_cpu_dbg(name, p, cpu_dbg)
 
-static int param_set_cpu_dbg(const char *val, struct kernel_param *kp);
-static int param_get_cpu_dbg(char *buffer, struct kernel_param *kp);
+static int param_set_cpu_dbg(const char *val, const struct kernel_param *kp);
+static int param_get_cpu_dbg(char *buffer, const struct kernel_param *kp);
 
 struct cpu_dbg {
 	unsigned long state_cntr[BCM21553_MAX_CPU_STATES];
@@ -97,6 +97,12 @@ struct cpu_dbg {
 static struct cpu_dbg cpu_dbg = {
 	.log_lvl = DEBUG_FLOW,
 };
+
+static struct kernel_param_ops param_ops_cpu_dbg = {
+	.set = param_set_cpu_dbg,
+	.get = param_get_cpu_dbg,
+};
+
 module_param_named(debug, cpu_dbg, cpu_dbg, S_IRUGO | S_IWUSR | S_IWGRP);
 
 static inline void instrument_cpuidle(struct bcm21553_cpuidle_state *cpu,
@@ -234,7 +240,7 @@ static void cmd_disable_cpuidle(const char *p)
 	cpuidle_pause_and_lock();
 }
 
-static int param_set_cpu_dbg(const char *val, struct kernel_param *kp)
+static int param_set_cpu_dbg(const char *val, const struct kernel_param *kp)
 {
 	const char *p;
 
@@ -269,7 +275,7 @@ static int param_set_cpu_dbg(const char *val, struct kernel_param *kp)
 	return 0;
 }
 
-static int param_get_cpu_dbg(char *buffer, struct kernel_param *kp)
+static int param_get_cpu_dbg(char *buffer, const struct kernel_param *kp)
 {
 	return 0;
 }

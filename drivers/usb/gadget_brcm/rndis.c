@@ -193,7 +193,8 @@ gen_ndis_query_resp (int configNr, u32 OID, u8 *buf, unsigned buf_len,
 	resp->InformationBufferOffset = __constant_cpu_to_le32 (16);
 
 	net = rndis_per_dev_params[configNr].dev;
-	stats = dev_get_stats(net);
+	struct rtnl_link_stats64 temp;
+	stats = dev_get_stats(net, &temp);
 
 	switch (OID) {
 

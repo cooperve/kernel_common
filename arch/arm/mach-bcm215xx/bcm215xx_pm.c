@@ -136,12 +136,18 @@ struct debug {
 #define param_check_debug(name, p) \
 	__param_check_debug(name, p, debug)
 
-static int param_set_debug(const char *val, struct kernel_param *kp);
-static int param_get_debug(char *buffer, struct kernel_param *kp);
+static int param_set_debug(const char *val, const struct kernel_param *kp);
+static int param_get_debug(char *buffer, const struct kernel_param *kp);
 
 static struct debug debug = {
 	.log_lvl = DEFAULT_LOG_LVL,
 };
+
+static struct kernel_param_ops param_ops_debug = {
+	.set = param_set_debug,
+	.get = param_get_debug,
+};
+
 module_param_named(debug, debug, debug, S_IRUGO | S_IWUSR | S_IWGRP);
 
 /* Helpers */
@@ -285,8 +291,7 @@ static void cmd_set_pm_qos(const char *p)
 		sscanf(p, "%x", &qos);
 		pr_info("qos: %d\n", qos);
 
-		pm_qos_req = pm_qos_add_request(PM_QOS_CPU_DMA_LATENCY,
-						qos);
+		pm_qos_add_request(&pm_qos_req, PM_QOS_CPU_DMA_LATENCY, qos);
 	} else if (*p == 'r') {
 		pm_qos_remove_request(pm_qos_req);
 	} else {
@@ -326,7 +331,7 @@ static void cmd_show_usage(void)
 	pr_info("%s", usage);
 }
 
-static int param_set_debug(const char *val, struct kernel_param *kp)
+static int param_set_debug(const char *val, const struct kernel_param *kp)
 {
 	const char *p;
 
@@ -400,7 +405,7 @@ static const char *slpbuf_field_names[] = {
 };
 
 static int bcm_fill_reg_log(char *buffer);
-static int param_get_debug(char *buffer, struct kernel_param *kp)
+static int param_get_debug(char *buffer, const struct kernel_param *kp)
 {
 	int sz = 0;
 	int i;

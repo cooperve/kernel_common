@@ -258,8 +258,7 @@ static int yaffs_statfs(struct super_block *sb, struct statfs *buf);
 static void yaffs_put_inode(struct inode *inode);
 #endif
 
-static void yaffs_delete_inode(struct inode *);
-static void yaffs_clear_inode(struct inode *);
+static void yaffs_evict_inode(struct inode *);
 
 static int yaffs_readpage(struct file *file, struct page *page);
 #if (LINUX_VERSION_CODE > KERNEL_VERSION(2, 5, 0))
@@ -397,8 +396,7 @@ static const struct super_operations yaffs_super_ops = {
 	.put_inode = yaffs_put_inode,
 #endif
 	.put_super = yaffs_put_super,
-	.delete_inode = yaffs_delete_inode,
-	.clear_inode = yaffs_clear_inode,
+	.evict_inode = yaffs_evict_inode,
 	.sync_fs = yaffs_sync_fs,
 	.write_super = yaffs_write_super,
 };
@@ -407,7 +405,7 @@ static unsigned yaffs_gc_control_callback(yaffs_Device *dev)
 {
 	return yaffs_gc_control;
 }
-                	                                                                                          	
+
 static void yaffs_GrossLock(yaffs_Device *dev)
 {
 	T(YAFFS_TRACE_LOCK, (TSTR("yaffs locking %p\n"), current));
@@ -419,6 +417,45 @@ static void yaffs_GrossUnlock(yaffs_Device *dev)
 {
 	T(YAFFS_TRACE_LOCK, (TSTR("yaffs unlocking %p\n"), current));
 	up(&(yaffs_DeviceToContext(dev)->grossLock));
+}
+
+/* yaffs_evict_inode combines into one operation what was previously done in
+ * yaffs_clear_inode() and yaffs_delete_inode()
+ *
+ */
+static void yaffs_evict_inode(struct inode *inode)
+{
+	yaffs_Object *obj;
+	yaffs_Device *dev;
+	int deleteme = 0;
+
+	obj = yaffs_InodeToObject(inode);
+
+	T(YAFFS_TRACE_OS,
+		(TSTR("yaffs_evict_inode: ino %d, count %d %s"),
+		(int)inode->i_ino,
+		atomic_read(&inode->i_count),
+		obj ? "object exists" : "null object"));
+
+	if (!inode->i_nlink && !is_bad_inode(inode))
+		deleteme = 1;
+	truncate_inode_pages(&inode->i_data, 0);
+	end_writeback(inode);
+
+	if (deleteme && obj) {
+		dev = obj->myDev;
+		yaffs_GrossLock(dev);
+		yaffs_DeleteObject(obj);
+		yaffs_GrossUnlock(dev);
+	}
+	if (obj) {
+		dev = obj->myDev;
+		yaffs_GrossLock(dev);
+		obj->myInode = NULL;
+		yaffs_InodeToObjectLV(inode) = NULL;
+		yaffs_HandleDeferedFree(obj);
+		yaffs_GrossUnlock(dev);
+	}
 }
 
 #ifdef YAFFS_COMPILE_EXPORTFS
@@ -736,68 +773,6 @@ static void yaffs_put_inode(struct inode *inode)
 
 }
 #endif
-
-/* clear is called to tell the fs to release any per-inode data it holds */
-static void yaffs_clear_inode(struct inode *inode)
-{
-	yaffs_Object *obj;
-	yaffs_Device *dev;
-
-	obj = yaffs_InodeToObject(inode);
-
-	T(YAFFS_TRACE_OS,
-		(TSTR("yaffs_clear_inode: ino %d, count %d %s\n"), (int)inode->i_ino,
-		atomic_read(&inode->i_count),
-		obj ? "object exists" : "null object"));
-
-	if (obj) {
-		dev = obj->myDev;
-		yaffs_GrossLock(dev);
-
-		/* Clear the association between the inode and
-		 * the yaffs_Object.
-		 */
-		obj->myInode = NULL;
-		yaffs_InodeToObjectLV(inode) = NULL;
-
-		/* If the object freeing was deferred, then the real
-		 * free happens now.
-		 * This should fix the inode inconsistency problem.
-		 */
-
-		yaffs_HandleDeferedFree(obj);
-
-		yaffs_GrossUnlock(dev);
-	}
-
-}
-
-/* delete is called when the link count is zero and the inode
- * is put (ie. nobody wants to know about it anymore, time to
- * delete the file).
- * NB Must call clear_inode()
- */
-static void yaffs_delete_inode(struct inode *inode)
-{
-	yaffs_Object *obj = yaffs_InodeToObject(inode);
-	yaffs_Device *dev;
-
-	T(YAFFS_TRACE_OS,
-		(TSTR("yaffs_delete_inode: ino %d, count %d %s\n"), (int)inode->i_ino,
-		atomic_read(&inode->i_count),
-		obj ? "object exists" : "null object"));
-
-	if (obj) {
-		dev = obj->myDev;
-		yaffs_GrossLock(dev);
-		yaffs_DeleteObject(obj);
-		yaffs_GrossUnlock(dev);
-	}
-#if (LINUX_VERSION_CODE > KERNEL_VERSION(2, 6, 13))
-	truncate_inode_pages(&inode->i_data, 0);
-#endif
-	clear_inode(inode);
-}
 
 #if (LINUX_VERSION_CODE > KERNEL_VERSION(2, 6, 17))
 static int yaffs_file_flush(struct file *file, fl_owner_t id)
@@ -1820,7 +1795,7 @@ static int yaffs_setattr(struct dentry *dentry, struct iattr *attr)
 	if (error == 0) {
 		int result;
 		if (!error){
-			error = inode_setattr(inode, attr);
+			setattr_copy(inode, attr);
 			T(YAFFS_TRACE_OS,(TSTR("inode_setattr called\n")));
 			if (attr->ia_valid & ATTR_SIZE)
                         	truncate_inode_pages(&inode->i_data,attr->ia_size);

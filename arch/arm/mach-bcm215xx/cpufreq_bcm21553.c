@@ -70,12 +70,18 @@ struct debug {
 #define param_check_debug(name, p) \
 	__param_check_debug(name, p, debug)
 
-static int param_set_debug(const char *val, struct kernel_param *kp);
-static int param_get_debug(char *buffer, struct kernel_param *kp);
+static int param_set_debug(const char *val, const struct kernel_param *kp);
+static int param_get_debug(char *buffer, const struct kernel_param *kp);
 
 static struct debug debug = {
 	.log_lvl = DEFAULT_LOG_LVL,
 };
+
+static struct kernel_param_ops param_ops_debug = {
+	.set = param_set_debug,
+	.get = param_get_debug,
+};
+
 module_param_named(debug, debug, debug, S_IRUGO | S_IWUSR | S_IWGRP);
 
 /* helpers to test the log_lvl bitmap */
@@ -118,7 +124,7 @@ static void cmd_show_stats(const char *p)
 	cpufreq_bcm_list_states();
 }
 
-static int param_set_debug(const char *val, struct kernel_param *kp)
+static int param_set_debug(const char *val, const struct kernel_param *kp)
 {
 	const char *p;
 
@@ -144,7 +150,7 @@ static int param_set_debug(const char *val, struct kernel_param *kp)
 	return 0;
 }
 
-static int param_get_debug(char *buffer, struct kernel_param *kp)
+static int param_get_debug(char *buffer, const struct kernel_param *kp)
 {
 	return 0;
 }
