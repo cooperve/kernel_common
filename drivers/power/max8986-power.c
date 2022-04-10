@@ -252,7 +252,7 @@ static int param_get_debug(char *buffer, struct kernel_param *kp);
 static struct debug debug = {
 	.log_lvl = DEFAULT_LOG_LVL,
 };
-module_param_named(debug, debug, debug, S_IRUGO | S_IWUSR | S_IWGRP);
+module_param_named(debug, debug, int, S_IRUGO | S_IWUSR | S_IWGRP);
 
 /* helpers to test the log_lvl bitmap */
 #define IS_FLOW_DBG_ENABLED	(debug.log_lvl & DEBUG_FLOW)
@@ -1954,7 +1954,7 @@ static ssize_t spa_Test_Store(struct device *dev, struct device_attribute *attr,
 #ifdef FEAT_EN_TEST_MODE
 #define SPA_TEST_ATTR(_name)													\
 {																				\
-        .attr = { .name = #_name, .mode = S_IRUGO | S_IWUG, .owner = THIS_MODULE },	\
+        .attr = { .name = #_name, .mode = S_IRUGO | S_IWUG},	\
         .show = spa_Test_Show,														\
         .store = spa_Test_Store,														\
 }

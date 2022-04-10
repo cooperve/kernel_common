@@ -79,7 +79,7 @@ static int param_get_debug(char *buffer, struct kernel_param *kp);
 static struct debug debug = {
 	.log_lvl = DEFAULT_LOG_LVL,
 };
-module_param_named(debug, debug, debug, S_IRUGO | S_IWUSR | S_IWGRP);
+module_param_named(debug, debug, int, S_IRUGO | S_IWUSR | S_IWGRP);
 
 /* Helpers */
 #define IS_FLOW_DBG_ENABLED (debug.log_lvl & CPUFREQ_DEBUG_FLOW)

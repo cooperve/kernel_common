@@ -397,7 +397,7 @@ static int sec_debug_panic_handler(struct notifier_block *nb,
 		sec_debug_set_upload_cause(UPLOAD_CAUSE_KERNEL_PANIC);
 
 
-	handle_sysrq('t', NULL);
+	handle_sysrq('t');
 
 	sec_debug_dump_stack();
 	sec_debug_hw_reset();

@@ -36,6 +36,7 @@
 #define _OSTYPES_H_
 
 #include <linux/jiffies.h>
+#include <linux/sched.h>
 /**
  * @addtogroup RTOSTypesGroup
  * @{

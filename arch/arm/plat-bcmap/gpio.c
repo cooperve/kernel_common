@@ -434,10 +434,10 @@ EXPORT_SYMBOL(bcm_gpio_get_pull_up_down);
 EXPORT_SYMBOL(bcm_gpio_get_db_val);
 
 static struct irq_chip gpio_irq_chip = {
-	.ack = gpio_irq_ack,
-	.mask = gpio_irq_mask,
-	.unmask = gpio_irq_unmask,
-	.set_type = gpio_irq_set_type,
+	.irq_ack = gpio_irq_ack,
+	.irq_mask = gpio_irq_mask,
+	.irq_unmask = gpio_irq_unmask,
+	.irq_set_type = gpio_irq_set_type,
 };
 
 int32_t __init bcm_gpio_init(struct bcm_gpio_port *port)

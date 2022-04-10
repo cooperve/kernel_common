@@ -296,11 +296,11 @@ static inline void intc_pm_register(void __iomem * base, unsigned int irq,
 
 static struct irq_chip intc_chip = {
 	.name = "INTC",
-	.ack = intc_ack_irq,
-	.mask = intc_mask_irq,
-	.unmask = intc_unmask_irq,
-	.set_type = intc_set_type,
-	.set_wake = intc_set_wake,
+	.irq_ack = intc_ack_irq,
+	.irq_mask = intc_mask_irq,
+	.irq_unmask = intc_unmask_irq,
+	.irq_set_type = intc_set_type,
+	.irq_set_wake = intc_set_wake,
 };
 
 /** @addtogroup InterruptAPIGroup

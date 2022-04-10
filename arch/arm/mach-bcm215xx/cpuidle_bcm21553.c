@@ -97,7 +97,7 @@ struct cpu_dbg {
 static struct cpu_dbg cpu_dbg = {
 	.log_lvl = DEBUG_FLOW,
 };
-module_param_named(debug, cpu_dbg, cpu_dbg, S_IRUGO | S_IWUSR | S_IWGRP);
+module_param_named(debug, cpu_dbg, int, S_IRUGO | S_IWUSR | S_IWGRP);
 
 static inline void instrument_cpuidle(struct bcm21553_cpuidle_state *cpu,
 				      int idle_time)

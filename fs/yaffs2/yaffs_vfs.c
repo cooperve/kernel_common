@@ -43,7 +43,6 @@
 #include <linux/init.h>
 #include <linux/fs.h>
 #include <linux/proc_fs.h>
-#include <linux/smp_lock.h>
 #include <linux/pagemap.h>
 #include <linux/mtd/mtd.h>
 #include <linux/interrupt.h>
@@ -2387,7 +2386,7 @@ static int yaffs_read_super(struct file_system_type *fs,
 static struct file_system_type yaffs_fs_type = {
 	.owner = THIS_MODULE,
 	.name = "yaffs",
-	.get_sb = yaffs_read_super,
+	.mount = yaffs_read_super,
 	.kill_sb = kill_block_super,
 	.fs_flags = FS_REQUIRES_DEV,
 };
@@ -2411,7 +2410,7 @@ static int yaffs2_read_super(struct file_system_type *fs,
 static struct file_system_type yaffs2_fs_type = {
 	.owner = THIS_MODULE,
 	.name = "yaffs2",
-	.get_sb = yaffs2_read_super,
+	.mount = yaffs2_read_super,
 	.kill_sb = kill_block_super,
 	.fs_flags = FS_REQUIRES_DEV,
 };

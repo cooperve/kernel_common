@@ -50,7 +50,6 @@
 #include <linux/tty.h>
 #include <linux/kmod.h>
 #include <linux/gfp.h>
-#include <linux/smp_lock.h>
 
 /*
  * Head entry for the doubly linked miscdevice list

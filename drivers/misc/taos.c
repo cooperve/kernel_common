@@ -375,7 +375,7 @@ static void taos_work_func_prox(struct work_struct *work)
 
 		PROXDBG("[TAOS] timeSub sec = %d, timeSub nsec = %d \n",timeSub.tv.sec,timeSub.tv.nsec);
 		
-		if (timeSub.tv.sec>=3 )
+		if (ktime_to_ns(timeSub) / 1000000000 >= 3)
 		{
 		    wake_lock_timeout(&prx_wake_lock,HZ/2);
 

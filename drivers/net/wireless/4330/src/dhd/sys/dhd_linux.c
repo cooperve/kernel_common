@@ -4051,7 +4051,7 @@ int dhd_os_wake_lock(dhd_pub_t *pub)
 		{
 			wake_lock(&dhd->wl_wifi);
 			if(wlan_driver_pm_qos_req==NULL)
-				wlan_driver_pm_qos_req = pm_qos_add_request(PM_QOS_CPU_DMA_LATENCY,0);
+				pm_qos_add_request(&wlan_driver_pm_qos_req, PM_QOS_CPU_DMA_LATENCY,0);
 		}
 #endif
 		dhd->wakelock_counter++;

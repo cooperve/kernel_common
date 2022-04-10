@@ -83,8 +83,8 @@
 #include <plat/csl/csl_cam.h>
 
 #include <linux/videodev2.h> //BYKIM_CAMACQ
-#include "camacq_api.h"
-#include "camacq_type.h"
+#include "../camacq/camacq_api.h"
+#include "../camacq/camacq_type.h"
 
 /* FIXME: Clear VSYNC interrupt explicitly until handler properly */
 //#define CAM_BOOT_TIME_MEMORY_SIZE (640*480*4)
@@ -1440,8 +1440,7 @@ int camera_enable(CamSensorSelect_t sensor)
 			printk(KERN_INFO"Unable to start RX\n");
 		
 		c->mode = CAM_STILL;
-		c->prev.tv.sec = 0;
-		c->prev.tv.nsec = 0;
+		c->prev = ktime_set(0, 0);
 		/*
 		cam_config_dma_buffers(sensor_size.resX, sensor_size.resY,
 				       c->main.format, sensor); */
@@ -1895,7 +1894,6 @@ static int __init cam_init(void)
 	int rc;
 	struct camera_sensor_t *c;
 	ktime_t in = ktime_get();
-	printk(KERN_INFO "%s sec %d nsec %d\n", banner,in.tv.sec,in.tv.nsec);
 	cam_g =
 	(struct cam_generic_t *)kmalloc(sizeof(struct cam_generic_t), GFP_KERNEL);
 	if (!cam_g) {
@@ -1993,7 +1991,6 @@ board_sysconfig(SYSCFG_CAMERA,SYSCFG_INIT);
 #endif
 	cam_power_down(cam_g->curr);
 	in = ktime_get();
-	printk(KERN_INFO"Cam_init end sec %d nsec %d\n",in.tv.sec,in.tv.nsec);
 	return rc;
 #if 0 	//BYKIM_PREVENT
 err3:	wake_lock_destroy(&cam_g->camera_wake_lock);

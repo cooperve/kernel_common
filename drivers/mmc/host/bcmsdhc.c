@@ -2177,15 +2177,15 @@ static int __init bcmsdhc_probe(struct platform_device *pdev)
 	 * can do scatter/gather or not.
 	 */
 	if (host->flags & SDHCI_USE_ADMA) {
-		mmc->max_hw_segs = 128;
+		mmc->max_segs = 128;
 	} else if (host->flags & SDHCI_USE_DMA) {
-		mmc->max_hw_segs = 1;
-		/* mmc->max_hw_segs = 128; */
+		mmc->max_segs = 1;
+		/* mmc->max_segs = 128; */
 	} else {		/* PIO */
 
-		mmc->max_hw_segs = 128;
+		mmc->max_segs = 128;
 	}
-	mmc->max_phys_segs = 128;
+	mmc->max_segs = 128;
 
 	/*
 	 * Maximum number of sectors in one transfer. Limited by DMA boundary
@@ -2466,8 +2466,7 @@ static int bcmsdhc_resume(struct platform_device *pdev)
 
 int sdio_add_qos_req(struct bcmsdhc_host *host)
 {
-	host->sdio_driver_pm_qos_req =
-		pm_qos_add_request(PM_QOS_CPU_DMA_LATENCY, PM_QOS_DEFAULT_VALUE);
+	pm_qos_add_request(&host->sdio_driver_pm_qos_req, PM_QOS_CPU_DMA_LATENCY, PM_QOS_DEFAULT_VALUE);
 	pr_debug("%s: ADD Qos\n",__FUNCTION__);
 
 	return 0;

@@ -70,8 +70,8 @@ the GPL, without Broadcom's express prior written consent.
 #include <plat/csl/csl_cam.h>
 
 #include <linux/videodev2.h> //BYKIM_CAMACQ
-#include "camacq_api.h"
-#include "camacq_s5k4ecgx.h"//BYKIM_DTP
+#include "../camacq/camacq_api.h"
+#include "../camacq/camacq_s5k4ecgx.h"//BYKIM_DTP
 
 /*****************************************************************************/
 /* start of CAM configuration */

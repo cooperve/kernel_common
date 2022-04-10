@@ -142,7 +142,7 @@ static int param_get_debug(char *buffer, struct kernel_param *kp);
 static struct debug debug = {
 	.log_lvl = DEFAULT_LOG_LVL,
 };
-module_param_named(debug, debug, debug, S_IRUGO | S_IWUSR | S_IWGRP);
+module_param_named(debug, debug, int, S_IRUGO | S_IWUSR | S_IWGRP);
 
 /* Helpers */
 #define IS_SUSPEND_LOG_ENABLED (debug.log_lvl & DEBUG_SUSPEND_LOG_ENABLE)
@@ -285,7 +285,7 @@ static void cmd_set_pm_qos(const char *p)
 		sscanf(p, "%x", &qos);
 		pr_info("qos: %d\n", qos);
 
-		pm_qos_req = pm_qos_add_request(PM_QOS_CPU_DMA_LATENCY,
+		pm_qos_add_request(&pm_qos_req, PM_QOS_CPU_DMA_LATENCY,
 						qos);
 	} else if (*p == 'r') {
 		pm_qos_remove_request(pm_qos_req);
